@@ -17,6 +17,8 @@
                 #:send-binary
                 #:send-ping
                 #:close-connection)
+  (:import-from #:websocket-driver.util
+                #:split-by-comma)
   (:import-from #:event-emitter
                 #:listeners
                 #:listener-count
@@ -60,7 +62,7 @@
     (and (eq (getf env :request-method) :get)
          (search "upgrade"  (gethash "connection" headers "") :test 'equalp)
          (string-equal (gethash "upgrade" headers "") "websocket")
-         (let ((version (gethash "sec-websocket-version" headers)))
-           (typecase version
-             (string (equal version "13"))
-             (number (eql version 13)))))))
+         (let ((ws-version (gethash "sec-websocket-version" headers)))
+           (typecase ws-version
+             (string (find "13" (split-by-comma ws-version) :test #'string=))
+             (integer (eql ws-version 13)))))))

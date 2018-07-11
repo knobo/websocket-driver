@@ -47,9 +47,10 @@
 
   ;; Sec-Websocket-Version must be "13"
   (let ((ws-version (gethash "sec-websocket-version"
-                             (headers server)
-                             "")))
+                             (headers server))))
     (etypecase ws-version
+      (null
+       (error "No Sec-WebSocket-Version header"))
       (string
        (unless (find "13" (split-by-comma ws-version)
                      :test #'string=)
@@ -59,7 +60,7 @@
          (error "Unsupported WebSocket version: ~S" ws-version)))))
   (setf (version server) "hybi-13"))
 
-(defmethod start-connection ((server server))
+(defmethod start-connection ((server server) &key)
   (unless (eq (ready-state server) :connecting)
       (return-from start-connection))
 
