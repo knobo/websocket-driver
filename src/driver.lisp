@@ -60,4 +60,7 @@
     (and (eq (getf env :request-method) :get)
          (search "upgrade"  (gethash "connection" headers "") :test 'equalp)
          (string-equal (gethash "upgrade" headers "") "websocket")
-         (eql (gethash "sec-websocket-version" headers) 13))))
+         (let ((version (gethash "sec-websocket-version" headers)))
+           (typecase version
+             (string (equal version "13"))
+             (number (eql version 13)))))))
